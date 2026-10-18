@@ -49,6 +49,7 @@ class Assessment {
    }
 }
 
+
 public class Course {
    private List<Assessment> assessments = new ArrayList<>();
 
@@ -63,14 +64,14 @@ public class Course {
          // the function should only return false.
 
       // Note: the boilerplate valid variable was scrapped because its ineffecient and useless.
-      
       // condition 2: The assessment name cannot be blank.
       if (name == null || name.isBlank()) {
          return false;
       }
+      final String nameKey = name.toLowerCase();
       // Condition 1: The assessment name must be unique to the course -
       // the assessment list cannot have assessments with the same name.
-      if (assessments.stream().anyMatch(assessment -> name.equals(assessment.getName()))) {
+      if (assessments.stream().anyMatch(assessment -> nameKey.equals(assessment.getName()))) {
          return false;
       }
 
@@ -110,15 +111,16 @@ public class Course {
          // make list -> check if contains -> true or false
          return false;
       }
-
+      
       // Condition 8: Assessment are either individual or group. 
       if (group) {  
       // If it is a group assessment, the grouping name must be provided.
          if (groupingName == null || groupingName.isEmpty()) {
             return false;
          }
+         final String groupKey = groupingName.toLowerCase();
          // Condition 9: The grouping name must be unique for each assessment
-         if (assessments.stream().anyMatch(assessment -> groupingName.equals(assessment.getGroupingName()))) {
+         if (assessments.stream().anyMatch(assessment -> groupKey.equals(assessment.getGroupingName()))) {
             return false;
          }
       }
@@ -147,8 +149,11 @@ public class Course {
       }
 
 
-      if (hideDate.isBefore(dueDate)) {
-         return false; // is hide before due?
+      if (!hideDate.isAfter(dueDate)) {
+         return false; // is hide before due date?
+      }
+      if (!dueDate.isAfter(pubDate)) {
+    	  return false; // is due date before the publish date?
       }
 
 
@@ -158,5 +163,17 @@ public class Course {
       
       this.assessments.add(newAssessment);
       return true; // guarantee that it returns true if all conditions are met
+   }
+   public List<Assessment> getAssessments() {
+	   return assessments;
+   }
+   public int getTotalPoints() {
+	   int total = 0; 
+	   for (Assessment assessment : assessments) {
+		   // For loop iterates thru all items
+	       // gets each assessment's points and adds to total
+		   total += assessment.getPoints(); 
+	   }
+	   return total;
    }
 }
